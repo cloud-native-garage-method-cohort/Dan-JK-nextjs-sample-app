@@ -8,6 +8,7 @@ export default function Intro() {
       </h1>
       <h4 className="text-center md:text-left text-lg mt-5 md:pl-8">
         A statically generated blog example, a collaborated effort by {' '}
+        Version 2
         <a
           href="https://nextjs.org/"
           className="underline hover:text-success duration-200 transition-colors"

@@ -1,23 +1,25 @@
-# Use node Docker image, version 16-alpine
-FROM quay.io/upslopeio/node-alpine
+FROM quay.io/upslopeio/node-alpine AS runner
+WORKDIR /app
 
-# From the documentation, "The WORKDIR instruction sets the working directory for any
-# RUN, CMD, ENTRYPOINT, COPY and ADD instructions that follow it in the Dockerfile"
-WORKDIR /usr/src/app
+ENV NODE_ENV production
 
-# COPY package.json and package-lock.json into root of WORKDIR
-COPY . ./
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
 
-# Executes commands
-RUN npm ci
-RUN npm run build
+# You only need to copy next.config.js if you are NOT using the default configuration
+# COPY --from=builder /app/next.config.js ./
+COPY ./public /app/public 
+COPY  /.next /app/.next
+COPY  ./node_modules /app/node_modules
+COPY ./package.json /app/package.json 
 
-# Copies files from source to destination, in this case the root of the build context
-# into the root of the WORKDIR
-#COPY . .
+USER nextjs
 
-# Document that this container exposes something on port 3000
 EXPOSE 3000
 
-# Command to use for starting the application
-CMD ["npm", "start"]
+# Next.js collects completely anonymous telemetry data about general usage.
+# Learn more here: https://nextjs.org/telemetry
+# Uncomment the following line in case you want to disable telemetry.
+# ENV NEXT_TELEMETRY_DISABLED 1
+
+CMD ["yarn", "start"]
